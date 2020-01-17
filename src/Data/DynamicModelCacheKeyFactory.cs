@@ -4,13 +4,11 @@ using Shigar.Core.Tenants.Contracts;
 
 namespace Shigar.Core.Tenants.Data
 {
-    internal class DynamicModelCacheKeyFactory<TContext> : IModelCacheKeyFactory
-        where TContext : TenantedContext<TContext>
+    internal class DynamicModelCacheKeyFactory : IModelCacheKeyFactory
     {
         public object Create(DbContext context)
         {
-
-            if (context is TenantedContext<TContext> dynamicContext)
+            if (context is ITenantedDbContext dynamicContext)
             {
                 return (context.GetType(), dynamicContext.TenantKey);
             }
