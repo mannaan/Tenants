@@ -20,7 +20,7 @@ namespace Shigar.Core.Tenants.Contracts
         public TenantedIdContext(DbContextOptions<TContext> options, ITenantContext tenantContext)
             : base(options)
         {
-            TenantKey = tenantContext.Key;
+            TenantKey = tenantContext?.Key;
         }
         protected override void OnConfiguring(DbContextOptionsBuilder options)
             => options.ReplaceService<IModelCacheKeyFactory, DynamicModelCacheKeyFactory>();
