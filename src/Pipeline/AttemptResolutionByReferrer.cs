@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace Shigar.Core.Tenants.Pipeline
 {
-    internal class ResolveTenantByQueryStringProcessor : IMiddleware
+    public class AttemptResolutionByReferrer : IMiddleware
     {
         private readonly ITenantRepository _tenantRepository;
         private readonly ITenantContext _tenantContext;
 
-        public ResolveTenantByQueryStringProcessor(ITenantRepository tenantRepository, ITenantContext tenantContext)
+        public AttemptResolutionByReferrer(ITenantRepository tenantRepository, ITenantContext tenantContext)
         {
             _tenantRepository = tenantRepository;
             _tenantContext = tenantContext;
@@ -21,11 +21,15 @@ namespace Shigar.Core.Tenants.Pipeline
         {
             if (_tenantContext.Resolved)
                 await next(context);
-            var key = context.Request.Query["_tenant"].ToString();
-            var tenant = _tenantRepository.FindByKey(key);
-            if (tenant != null && tenant.Active)
+            var referrer = context.Request.Headers["Referer"].ToString();
+            if (!string.IsNullOrEmpty(referrer))
             {
-                _tenantContext.Set(tenant.Key);
+                var uriReferer = new Uri(referrer);
+                var tenant = _tenantRepository.FindByHostName(uriReferer.Host);
+                if (tenant != null && tenant.Active)
+                {
+                    _tenantContext.Set(tenant.Key);
+                }
             }
             await next(context);
         }

@@ -4,12 +4,12 @@ using System.Threading.Tasks;
 
 namespace Shigar.Core.Tenants.Pipeline
 {
-    internal class ResolveTenantByHostProcessor : IMiddleware
+    public class AttemptResolutionByHost : IMiddleware
     {
         private readonly ITenantRepository _tenantRepository;
         private readonly ITenantContext _tenantContext;
 
-        public ResolveTenantByHostProcessor(ITenantRepository tenantRepository, ITenantContext tenantContext)
+        public AttemptResolutionByHost(ITenantRepository tenantRepository, ITenantContext tenantContext)
         {
             _tenantRepository = tenantRepository;
             _tenantContext = tenantContext;

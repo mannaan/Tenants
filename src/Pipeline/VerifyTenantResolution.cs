@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace Shigar.Core.Tenants.Pipeline
 {
-    internal class VerifyTenantResolutionProcessor : IMiddleware
+    public class VerifyTenantResolution : IMiddleware
     {
         private readonly ITenantContext _tenantContext;
 
-        public VerifyTenantResolutionProcessor(ITenantContext tenantContext)
+        public VerifyTenantResolution(ITenantContext tenantContext)
         {
             _tenantContext = tenantContext;
 

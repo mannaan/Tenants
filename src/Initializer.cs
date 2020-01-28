@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Shigar.Core.Tenants.Contracts;
@@ -11,24 +12,25 @@ namespace Shigar.Core.Tenants
 {
     public static class Initializer
     {
-        public static IApplicationBuilder UseTenants(
+        public static TenantResolutionBuilder InitTenantResolution(
             this IApplicationBuilder builder)
         {
-            //Tenant Resolution
             builder.UseMiddleware<InitializeTenantResolutionProcessor>();
-            builder.UseMiddleware<ResolveTenantByQueryStringProcessor>();
-            builder.UseMiddleware<ResolveTenantByHostProcessor>();
-            return builder.UseMiddleware<VerifyTenantResolutionProcessor>();
+            return new TenantResolutionBuilder(builder); 
         }
-
+      
         public static void AddTenants(this IServiceCollection services, string connectionString)
         {
             services.AddHttpContextAccessor();
             //pipeline processors
             services.AddTransient<InitializeTenantResolutionProcessor>();
-            services.AddTransient<ResolveTenantByHostProcessor>();
-            services.AddTransient<ResolveTenantByQueryStringProcessor>();
-            services.AddTransient<VerifyTenantResolutionProcessor>();
+            services.AddTransient<AttemptResolutionByHost>();
+            services.AddTransient<AttemptResolutionByQueryString>();
+            services.AddTransient<AttemptResolutionByReferrer>();
+            services.AddTransient<AttemptResolutionByCookie>();
+
+
+            services.AddTransient<VerifyTenantResolution>();
 
             //Services
             services.AddDbContext<TenantDbContext>(options =>
@@ -70,5 +72,30 @@ namespace Shigar.Core.Tenants
             };
             return tenantRepository.CreateOrUpdate(tenant);
         }
+    }
+    public class TenantResolutionBuilder
+    {
+        private IApplicationBuilder _builder { get; }
+        public TenantResolutionBuilder(IApplicationBuilder appBuider)
+        {
+            _builder = appBuider;
+        }
+
+        public void UseMiddleware<T>() where T: IMiddleware
+        {
+            _builder.UseMiddleware<T>();
+        }
+
+    }
+    public static class TenantResolutionBuilderExtensions
+    {
+        public static TenantResolutionBuilder Then<T>(
+            this TenantResolutionBuilder builder) where T : IMiddleware
+        {
+            builder.UseMiddleware<T>();
+
+            return builder;
+        }
+      
     }
 }
