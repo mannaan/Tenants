@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
+﻿using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Shigar.Core.Tenants.Contracts;
@@ -81,21 +81,31 @@ namespace Shigar.Core.Tenants
             _builder = appBuider;
         }
 
-        public void UseMiddleware<T>() where T: IMiddleware
+        public void UseMiddleware<T>() 
         {
             _builder.UseMiddleware<T>();
+        }
+        public void UseMiddleware<T>(object options) 
+        {
+            _builder.UseMiddleware<T>(options);
         }
 
     }
     public static class TenantResolutionBuilderExtensions
     {
         public static TenantResolutionBuilder Then<T>(
-            this TenantResolutionBuilder builder) where T : IMiddleware
+            this TenantResolutionBuilder builder) 
         {
             builder.UseMiddleware<T>();
 
             return builder;
         }
-      
+        public static TenantResolutionBuilder Then<T>(
+            this TenantResolutionBuilder builder, object options)
+        {
+            builder.UseMiddleware<T>(options);
+            return builder;
+        }
+
     }
 }
