@@ -45,18 +45,6 @@ namespace Shigar.Core.Tenants.Services
             return _applicationContext.Tenants.FirstOrDefault(t => t.TenantId == id);
         }
 
-        public ITenant FindByHostName(string host)
-        {
-            return _applicationContext.Tenants.ToList().FirstOrDefault(t => t.Host.Equals(host, StringComparison.InvariantCultureIgnoreCase));
-
-        }
-
-        public ITenant FindByKey(string key)
-        {
-            return _applicationContext.Tenants.ToList().FirstOrDefault(t => t.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
-
-        }
-
         public ITenant CreateOrUpdate(ITenant tenantValues)
         {
             ITenant tenant = null;

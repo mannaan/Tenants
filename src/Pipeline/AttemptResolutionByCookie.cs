@@ -6,12 +6,12 @@ namespace Shigar.Core.Tenants.Pipeline
 {
     public class AttemptResolutionByCookie : IMiddleware
     {
-        private readonly ITenantRepository _tenantRepository;
+        private readonly ITenantSearcher _tenantSearcher;
         private readonly ITenantContext _tenantContext;
 
-        public AttemptResolutionByCookie(ITenantRepository tenantRepository, ITenantContext tenantContext)
+        public AttemptResolutionByCookie(ITenantSearcher tenantSearcher, ITenantContext tenantContext)
         {
-            _tenantRepository = tenantRepository;
+            _tenantSearcher = tenantSearcher;
             _tenantContext = tenantContext;
 
         }
@@ -23,7 +23,7 @@ namespace Shigar.Core.Tenants.Pipeline
             var key = context.Request.Cookies[Constants.TenantCookie];
             if (!string.IsNullOrEmpty(key))
             {
-                var tenant = _tenantRepository.FindByKey(key);
+                var tenant = _tenantSearcher.FindByKey(key);
                 if (tenant != null && tenant.Active)
                 {
                     _tenantContext.Set(tenant.Key);

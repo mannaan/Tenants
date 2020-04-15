@@ -7,12 +7,12 @@ namespace Shigar.Core.Tenants.Pipeline
 {
     public class AttemptResolutionByReferrer : IMiddleware
     {
-        private readonly ITenantRepository _tenantRepository;
+        private readonly ITenantSearcher _tenantSearcher;
         private readonly ITenantContext _tenantContext;
 
-        public AttemptResolutionByReferrer(ITenantRepository tenantRepository, ITenantContext tenantContext)
+        public AttemptResolutionByReferrer(ITenantSearcher tenantSearcher, ITenantContext tenantContext)
         {
-            _tenantRepository = tenantRepository;
+            _tenantSearcher = tenantSearcher;
             _tenantContext = tenantContext;
 
         }
@@ -25,7 +25,7 @@ namespace Shigar.Core.Tenants.Pipeline
             if (!string.IsNullOrEmpty(referrer))
             {
                 var uriReferer = new Uri(referrer);
-                var tenant = _tenantRepository.FindByHostName(uriReferer.Host);
+                var tenant = _tenantSearcher.FindByHostName(uriReferer.Host);
                 if (tenant != null && tenant.Active)
                 {
                     _tenantContext.Set(tenant.Key);

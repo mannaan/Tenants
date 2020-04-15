@@ -37,6 +37,8 @@ namespace Shigar.Core.Tenants
                options.UseSqlServer(connectionString));
             services.AddTransient<ITenantRepository, TenantRepository>();
             services.AddTransient<ITenantContext, TenantContext>();
+            services.AddTransient<ITenantSearcher, TenantSearcher>();
+
 
             services.InitializeDefaultTenant(connectionString);
         }
@@ -58,7 +60,7 @@ namespace Shigar.Core.Tenants
         }
         private static ITenant AddTenantToDb(string key, string name, string desciption, string host, ITenantRepository tenantRepository)
         {
-            var existing = tenantRepository.FindByKey(key);
+            var existing = tenantRepository.GetAllTenants().FirstOrDefault(t=>t.Key.Equals(key,StringComparison.InvariantCultureIgnoreCase));
             if (existing != null)
                 return existing;
             var tenant = new Tenant

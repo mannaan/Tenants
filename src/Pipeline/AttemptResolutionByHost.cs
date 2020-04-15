@@ -6,12 +6,12 @@ namespace Shigar.Core.Tenants.Pipeline
 {
     public class AttemptResolutionByHost : IMiddleware
     {
-        private readonly ITenantRepository _tenantRepository;
+        private readonly ITenantSearcher _tenantSearcher;
         private readonly ITenantContext _tenantContext;
 
-        public AttemptResolutionByHost(ITenantRepository tenantRepository, ITenantContext tenantContext)
+        public AttemptResolutionByHost(ITenantSearcher tenantSearcher, ITenantContext tenantContext)
         {
-            _tenantRepository = tenantRepository;
+            _tenantSearcher = tenantSearcher;
             _tenantContext = tenantContext;
 
         }
@@ -21,7 +21,7 @@ namespace Shigar.Core.Tenants.Pipeline
             if (_tenantContext.Resolved)
                 await next(context);
             var host = context.Request.Host.Host;
-            var tenant = _tenantRepository.FindByHostName(host);
+            var tenant = _tenantSearcher.FindByHostName(host);
             if (tenant != null && tenant.Active)
             {
                 _tenantContext.Set(tenant.Key);
