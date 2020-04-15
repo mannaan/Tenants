@@ -11,7 +11,7 @@
     <RepositoryUrl>https://github.com/mannaan/Tenants</RepositoryUrl>
     <PackageTags>tenants, multi-tenants, multi-tenanted, tenanted, shigar</PackageTags>
     <PackageId>Shigar.Core.Tenants</PackageId>
-    <Version>1.0.0.28</Version>
+    <Version>1.0.0.29</Version>
   </PropertyGroup>
 
   <ItemGroup>

@@ -16,9 +16,8 @@ namespace Shigar.Core.Tenants
             this IApplicationBuilder builder)
         {
             builder.UseMiddleware<InitializeTenantResolutionProcessor>();
-            return new TenantResolutionBuilder(builder); 
+            return new TenantResolutionBuilder(builder);
         }
-      
         public static void AddTenants(this IServiceCollection services, string connectionString)
         {
             services.AddHttpContextAccessor();
@@ -60,7 +59,7 @@ namespace Shigar.Core.Tenants
         }
         private static ITenant AddTenantToDb(string key, string name, string desciption, string host, ITenantRepository tenantRepository)
         {
-            var existing = tenantRepository.GetAllTenants().FirstOrDefault(t=>t.Key.Equals(key,StringComparison.InvariantCultureIgnoreCase));
+            var existing = tenantRepository.GetAllTenants().FirstOrDefault(t => t.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
             if (existing != null)
                 return existing;
             var tenant = new Tenant
@@ -75,39 +74,5 @@ namespace Shigar.Core.Tenants
             return tenantRepository.CreateOrUpdate(tenant);
         }
     }
-    public class TenantResolutionBuilder
-    {
-        private IApplicationBuilder _builder { get; }
-        public TenantResolutionBuilder(IApplicationBuilder appBuider)
-        {
-            _builder = appBuider;
-        }
 
-        public void UseMiddleware<T>() 
-        {
-            _builder.UseMiddleware<T>();
-        }
-        public void UseMiddleware<T>(object options) 
-        {
-            _builder.UseMiddleware<T>(options);
-        }
-
-    }
-    public static class TenantResolutionBuilderExtensions
-    {
-        public static TenantResolutionBuilder Then<T>(
-            this TenantResolutionBuilder builder) 
-        {
-            builder.UseMiddleware<T>();
-
-            return builder;
-        }
-        public static TenantResolutionBuilder Then<T>(
-            this TenantResolutionBuilder builder, object options)
-        {
-            builder.UseMiddleware<T>(options);
-            return builder;
-        }
-
-    }
 }
